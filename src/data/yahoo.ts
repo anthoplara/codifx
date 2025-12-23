@@ -13,11 +13,12 @@ export class YahooFinanceProvider extends BaseDataProvider {
     async fetchOHLCV(
         symbol: string,
         timeframe: Timeframe,
-        limit: number = 200
+        limit: number = 200,
+        targetDate?: Date
     ): Promise<OHLCV[]> {
         try {
             const interval = this.convertTimeframe(timeframe)
-            const period = this.calculatePeriod(timeframe, limit)
+            const period = this.calculatePeriod(timeframe, limit, targetDate)
             const url = `${this.baseUrl}/${symbol}`
             const response = await axios.get(url, {
                 params: {
@@ -43,13 +44,21 @@ export class YahooFinanceProvider extends BaseDataProvider {
             )
 
             // Filter out null values and validate
-            const validData = data.filter(
+            let validData = data.filter(
                 (candle) =>
                     candle.open !== null &&
                     candle.high !== null &&
                     candle.low !== null &&
                     candle.close !== null
             )
+
+            // Filter by targetDate if provided
+            if (targetDate) {
+                const maxTimestamp = targetDate.getTime()
+                validData = validData.filter(
+                    (candle) => candle.timestamp <= maxTimestamp
+                )
+            }
 
             if (!this.validateData(validData)) {
                 throw new Error("Invalid data received from Yahoo Finance")
@@ -93,8 +102,13 @@ export class YahooFinanceProvider extends BaseDataProvider {
 
     /**
      * Calculate appropriate period range based on timeframe and limit
+     * If targetDate is provided, calculate from that date instead of today
      */
-    private calculatePeriod(timeframe: Timeframe, limit: number): string {
+    private calculatePeriod(
+        timeframe: Timeframe,
+        limit: number,
+        targetDate?: Date
+    ): string {
         // Estimate trading hours per day (Indonesian market: ~6.5 hours)
         const tradingHoursPerDay = 6.5
 
@@ -128,6 +142,15 @@ export class YahooFinanceProvider extends BaseDataProvider {
 
         // Add 50% buffer for weekends, holidays, and data gaps
         daysNeeded = Math.ceil(daysNeeded * 1.5)
+
+        // If targetDate provided, add days from targetDate to today
+        if (targetDate) {
+            const today = new Date()
+            const daysSinceTarget = Math.floor(
+                (today.getTime() - targetDate.getTime()) / (1000 * 60 * 60 * 24)
+            )
+            daysNeeded += daysSinceTarget
+        }
 
         // Map to Yahoo Finance period strings
         if (daysNeeded <= 1) return "1d"

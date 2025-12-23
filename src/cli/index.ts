@@ -44,6 +44,10 @@ program
         "both"
     )
     .option(
+        "--date <date>",
+        "Historical date for backtesting (YYYY-MM-DD, max 7 days back)"
+    )
+    .option(
         "--log [filepath]",
         "Save detailed scan log to file (auto-location if no path specified)"
     )

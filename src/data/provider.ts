@@ -15,7 +15,8 @@ export abstract class BaseDataProvider implements DataProvider {
     abstract fetchOHLCV(
         symbol: string,
         timeframe: Timeframe,
-        limit: number
+        limit: number,
+        targetDate?: Date
     ): Promise<OHLCV[]>
 
     abstract isAvailable(): Promise<boolean>

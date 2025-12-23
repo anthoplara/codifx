@@ -25,10 +25,42 @@ export async function scanCommand(options: {
     verbose?: boolean
     log?: string | boolean
     html?: string | boolean
+    date?: string
 }) {
     const spinner = ora("Initializing scanner").start()
 
     try {
+        // Validate and parse date parameter
+        let targetDate: Date | undefined
+        if (options.date) {
+            targetDate = new Date(options.date)
+
+            // Validate date format
+            if (isNaN(targetDate.getTime())) {
+                throw new Error(
+                    "Invalid date format. Use YYYY-MM-DD (e.g., 2025-12-22)"
+                )
+            }
+
+            // Validate max 7 days back
+            const today = new Date()
+            today.setHours(0, 0, 0, 0) // Reset to start of day
+            targetDate.setHours(23, 59, 59, 999) // Set to end of day
+
+            const daysDiff = Math.floor(
+                (today.getTime() - targetDate.getTime()) / (1000 * 60 * 60 * 24)
+            )
+
+            if (daysDiff < 0) {
+                throw new Error("Date cannot be in the future")
+            }
+            if (daysDiff > 7) {
+                throw new Error("Date cannot be more than 7 days back")
+            }
+
+            spinner.info(`Historical scan for date: ${options.date}`)
+        }
+
         // Validate direction parameter
         const directionFilter = options.direction?.toLowerCase() || "both"
         if (!["buy", "sell", "both"].includes(directionFilter)) {
@@ -151,12 +183,14 @@ export async function scanCommand(options: {
                 const primaryData = await provider.fetchOHLCV(
                     symbol,
                     primaryTF,
-                    dataCount
+                    dataCount,
+                    targetDate
                 )
                 const confirmationData = await provider.fetchOHLCV(
                     symbol,
                     confirmationTF,
-                    dataCount
+                    dataCount,
+                    targetDate
                 )
 
                 // Analyze

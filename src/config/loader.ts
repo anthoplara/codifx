@@ -30,20 +30,16 @@ export async function loadProfile(profilePath?: string): Promise<Profile> {
         const content = await readFile(configPath, "utf-8")
         const data = JSON.parse(content)
 
-        // Load global datasource config if not specified in profile
+        // Load global watchlist config if not specified in profile
         if (!data.dataSource) {
             const packageRoot = new URL("../../", import.meta.url).pathname
-            const datasourcePath = join(
-                packageRoot,
-                "config",
-                "datasource.json"
-            )
+            const watchlistPath = join(packageRoot, "config", "watchlist.json")
 
             try {
-                const dsContent = await readFile(datasourcePath, "utf-8")
-                data.dataSource = JSON.parse(dsContent)
+                const watchlistContent = await readFile(watchlistPath, "utf-8")
+                data.dataSource = JSON.parse(watchlistContent)
             } catch (error) {
-                // If global datasource doesn't exist, it's okay - profile can have its own
+                // If global watchlist doesn't exist, it's okay - profile can have its own
             }
         }
 

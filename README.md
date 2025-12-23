@@ -62,6 +62,25 @@ codifx scan --symbols BBCA TLKM --html
 codifx scan --symbols BBCA TLKM --log
 ```
 
+### Historical Backtesting
+
+Test your strategy with historical data (max 7 days back):
+
+```bash
+# Scan as of specific date
+codifx scan --symbols BBCA TLKM --date 2025-12-22
+
+# Backtest with HTML dashboard
+codifx scan --symbols BBCA --date 2025-12-20 --html --log
+
+# Compare historical vs current
+codifx scan --symbols BBCA --date 2025-12-20 --log
+codifx scan --symbols BBCA --log  # Today's scan
+```
+
+**Date Format**: `YYYY-MM-DD` (e.g., `2025-12-22`)  
+**Limitation**: Maximum 7 days back, cannot be in the future
+
 ### Profile Management
 
 ```bash

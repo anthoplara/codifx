@@ -1,6 +1,6 @@
 {
     "name": "codifx",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "description": "Professional multi-type trading scanner CLI supporting scalping, day trading, and swing trading",
     "type": "module",
     "main": "./dist/index.js",

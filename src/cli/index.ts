@@ -8,13 +8,22 @@ import { simulateCommand } from "./commands/simulate.js"
 import { profileCommand } from "./commands/profile.js"
 import { validateCommand } from "./commands/validate.js"
 import { explainCommand } from "./commands/explain.js"
+import { readFileSync } from "fs"
+import { join, dirname } from "path"
+import { fileURLToPath } from "url"
+
+// Get package version
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const packageJson = JSON.parse(
+    readFileSync(join(__dirname, "../../package.json"), "utf-8")
+)
 
 const program = new Command()
 
 program
     .name("codifx")
     .description("Professional multi-type trading scanner CLI")
-    .version("0.1.0")
+    .version(packageJson.version)
 
 // Global options
 program

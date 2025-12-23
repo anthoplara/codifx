@@ -364,48 +364,6 @@ TLKM.JK    ▼ SELL   74      SPECULATIVE   Rp 3.470    Rp 3.430    Rp 3.470    
     - Volatility: PASS ✅
 ```
 
-## 🔧 Configuration
-
-### Profile Customization
-
-Edit profile files in `profiles/` directory:
-
-**File Structure:**
-
-```
-profiles/
-├── day.profile.json
-├── swing.profile.json
-└── scalp.profile.json
-```
-
-**Customizable Parameters:**
-
-1. **Timeframes**
-
-    - `primary`: 1m, 5m, 15m, 1h, 1d
-    - `confirmation`: 5m, 15m, 1h, 1d, 1w
-
-2. **Weights** (must sum to 100)
-
-    - `trend`: 0-100
-    - `oscillator`: 0-100
-
-3. **Filters**
-
-    - `minVolume`: Minimum average volume
-    - `minADX`: Minimum ADX for trend strength (0-100)
-    - `atrMinPercent`: Minimum ATR% for volatility
-    - `atrMaxPercent`: Maximum ATR% for volatility
-
-4. **Scoring**
-
-    - `minScore`: Minimum score threshold (0-100)
-
-5. **Indicators**
-    - `trend`: ["SMA20", "EMA10", "EMA20", "EMA50", "HMA9", "VWMA20"]
-    - `oscillators`: ["RSI", "MACD", "Stochastic", "ADX", "CCI", "Williams"]
-
 ## 🎯 Scoring System
 
 ### Base Score Calculation
@@ -426,39 +384,7 @@ Final Score = (Trend × Weight_Trend) + (Oscillator × Weight_Oscillator) + Bonu
 -   **BUY/SELL**: Score ≥ 75
 -   **SPECULATIVE**: Score ≥ 65 (or profile minScore)
 
-## 🛠️ Architecture
-
-### Core Components
-
-```
-src/
-├── cli/               # Command-line interface
-│   ├── index.ts       # CLI entry point
-│   └── commands/      # Command implementations
-│       ├── scan.ts    # Main scanning logic
-│       ├── profile.ts # Profile management
-│       └── validate.ts# Validation tools
-├── core/              # Analysis engines
-│   ├── engine.ts      # Main scanner engine
-│   ├── trend-engine.ts     # Trend analysis
-│   ├── oscillator-engine.ts# Oscillator analysis
-│   ├── scoring.ts     # Scoring & rating system
-│   └── filters.ts     # Volume & volatility filters
-├── indicators/        # Technical indicators
-│   ├── trend/         # SMA, EMA, HMA, VWMA
-│   └── oscillator/    # RSI, MACD, Stochastic, ADX, CCI, Williams
-├── data/              # Data providers
-│   ├── yahoo.ts       # Yahoo Finance integration
-│   └── provider.ts    # Base data provider
-├── utils/             # Utilities
-│   ├── html-generator.ts # HTML dashboard generator
-│   ├── logger.ts      # Detailed logging
-│   ├── formatter.ts   # Output formatting
-│   └── levels.ts      # Trading levels calculator
-└── types/             # TypeScript types
-```
-
-## 📝 Advanced Usage
+## Advanced Usage
 
 ### Custom Scan with All Options
 

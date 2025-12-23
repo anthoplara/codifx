@@ -37,6 +37,9 @@ program
     .description("Scan live market data for trading signals")
     .option("-s, --symbol <symbol>", "Single symbol to scan")
     .option("-l, --symbols <symbols...>", "Multiple symbols to scan")
+    .option("-t, --trade-type <type>", "Trading type: scalp, day, or swing")
+    .option("-p, --profile <path>", "Path to custom profile configuration")
+    .option("-w, --watchlist <path>", "Path to custom watchlist JSON file")
     .option("-m, --market <market>", "Market: IDX, NASDAQ, NYSE, CRYPTO", "IDX")
     .option(
         "-d, --direction <direction>",

@@ -7,6 +7,12 @@ import { resolve, join } from "path"
 import { ProfileSchema } from "./schema.js"
 import type { Profile } from "../types/index.js"
 
+export interface WatchlistFile {
+    name?: string
+    market?: string
+    symbols: string[]
+}
+
 const DEFAULT_PROFILE = "day.profile.json"
 const PROFILE_DIR = "profiles"
 
@@ -93,4 +99,53 @@ export async function validateProfile(profilePath: string): Promise<boolean> {
 export function getProfilePathByType(tradingType: string): string {
     const packageRoot = new URL("../../", import.meta.url).pathname
     return join(packageRoot, PROFILE_DIR, `${tradingType}.profile.json`)
+}
+
+/**
+ * Load watchlist from JSON file
+ * Supports multiple formats:
+ * - Simple array: ["BBCA", "TLKM"]
+ * - Object: { "market": "IDX", "symbols": [...] }
+ * - Multi-market array: [{ "market": "IDX", "symbols": [...] }, ...]
+ */
+export async function loadWatchlist(path: string): Promise<WatchlistFile> {
+    try {
+        const content = await readFile(path, "utf-8")
+        const data = JSON.parse(content)
+
+        // Simple array format
+        if (Array.isArray(data) && typeof data[0] === "string") {
+            return { symbols: data }
+        }
+
+        // Multi-market array (use first watchlist)
+        if (Array.isArray(data) && data[0]?.symbols) {
+            const first = data[0]
+            return {
+                name: first.name,
+                market: first.market,
+                symbols: first.symbols,
+            }
+        }
+
+        // Single watchlist object
+        if (data.symbols && Array.isArray(data.symbols)) {
+            return {
+                name: data.name,
+                market: data.market,
+                symbols: data.symbols,
+            }
+        }
+
+        throw new Error(
+            "Invalid watchlist format. Expected array of symbols or object with 'symbols' property"
+        )
+    } catch (error) {
+        if (error instanceof Error) {
+            throw new Error(
+                `Failed to load watchlist from ${path}: ${error.message}`
+            )
+        }
+        throw error
+    }
 }

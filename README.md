@@ -62,6 +62,118 @@ codifx scan --symbols BBCA TLKM --html
 codifx scan --symbols BBCA TLKM --log
 ```
 
+### Custom Profiles & Watchlists
+
+Create custom trading strategies with your own profiles and symbol lists.
+
+#### Creating a Custom Profile
+
+Create a JSON file (e.g., `my-strategy.profile.json`):
+
+```json
+{
+    "tradingType": "day",
+    "timeframes": {
+        "primary": "5m",
+        "confirmation": "15m"
+    },
+    "indicators": {
+        "trend": ["EMA10", "EMA20", "EMA50"],
+        "oscillators": ["RSI", "Stochastic", "MACD", "ADX"]
+    },
+    "weights": {
+        "trend": 40,
+        "oscillator": 60
+    },
+    "filters": {
+        "minVolume": 1000000,
+        "minADX": 20,
+        "atrMinPercent": 1.0,
+        "atrMaxPercent": 4.0
+    },
+    "scoring": {
+        "minScore": 70
+    },
+    "dataSource": {
+        "market": "IDX",
+        "provider": "yahoo"
+    }
+}
+```
+
+**Key Parameters:**
+
+-   `weights.trend` / `weights.oscillator` - Must total 100
+-   `scoring.minScore` - Higher = more selective (60-80 recommended)
+-   `filters.minVolume` - Daily volume threshold
+-   `filters.minADX` - Trend strength (15-25 typical)
+
+#### Creating a Custom Watchlist
+
+**Simple Array Format:**
+
+```json
+["BBCA", "TLKM", "ASII", "UNVR", "ICBP"]
+```
+
+**Object Format with Metadata:**
+
+```json
+{
+    "name": "Banking Sector",
+    "market": "IDX",
+    "symbols": ["BBCA", "BBNI", "BBRI", "BMRI", "BDMN", "BNGA"]
+}
+```
+
+**Multi-Market Format:**
+
+```json
+[
+    {
+        "name": "IDX Blue Chips",
+        "market": "IDX",
+        "symbols": ["BBCA", "TLKM", "ASII", "UNVR"]
+    },
+    {
+        "name": "US Tech",
+        "market": "NASDAQ",
+        "symbols": ["AAPL", "MSFT", "GOOGL", "NVDA"]
+    }
+]
+```
+
+#### Usage Examples
+
+```bash
+# Use custom profile only
+codifx scan --profile aggressive-day.json --symbols BBCA TLKM
+
+# Use custom watchlist only
+codifx scan --watchlist banking-sector.json --html
+
+# Combine custom profile + watchlist
+codifx scan \
+  --profile scalp.json \
+  --watchlist high-volume.json \
+  --date 2025-12-22 \
+  --html
+
+# Built-in trade type + custom watchlist
+codifx scan --trade-type swing --watchlist my-stocks.json
+
+# All options combined
+codifx scan \
+  --profile my-strategy.json \
+  --watchlist tech-stocks.json \
+  --direction buy \
+  --date 2025-12-20 \
+  --html \
+  --log
+```
+
+**Symbol Priority:** `--symbol` > `--symbols` > `--watchlist` > profile default
+
 ### Historical Backtesting
 
 Test your strategy with historical data (max 7 days back):

@@ -18,6 +18,7 @@ import { HTMLGenerator } from "../../utils/html-generator.js"
 export async function scanCommand(options: {
     tradeType?: TradingType
     profile?: string
+    watchlist?: string
     symbol?: string
     symbols?: string[]
     market?: Market
@@ -92,11 +93,30 @@ export async function scanCommand(options: {
         spinner.succeed("Data provider ready")
 
         // Get symbols to scan
+        // Priority: --symbol > --symbols > --watchlist > profile.dataSource
         let symbols: string[] = []
+        let market = options.market || profile.dataSource?.market || "NASDAQ"
+
         if (options.symbol) {
             symbols = [options.symbol]
         } else if (options.symbols) {
             symbols = options.symbols
+        } else if (options.watchlist) {
+            // Load from watchlist file
+            const { loadWatchlist } = await import("../../config/loader.js")
+            const watchlist = await loadWatchlist(options.watchlist)
+            symbols = watchlist.symbols
+
+            // Use market from watchlist if not specified via --market
+            if (!options.market && watchlist.market) {
+                market = watchlist.market as Market
+            }
+
+            if (watchlist.name) {
+                spinner.info(
+                    `Loaded watchlist: ${watchlist.name} (${symbols.length} symbols)`
+                )
+            }
         } else {
             // Use default symbols from profile or fallback
             symbols = profile.dataSource?.defaultSymbols || [
@@ -110,9 +130,6 @@ export async function scanCommand(options: {
         if (!symbols || symbols.length === 0) {
             symbols = ["AAPL", "MSFT", "GOOGL", "AMZN", "TSLA"]
         }
-
-        // Get market from options or profile
-        const market = options.market || profile.dataSource?.market || "NASDAQ"
 
         // Normalize symbols with market suffix
         symbols = normalizeSymbols(symbols, market)

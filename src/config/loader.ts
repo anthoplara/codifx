@@ -37,7 +37,25 @@ export async function loadProfile(profilePath?: string): Promise<Profile> {
 
             try {
                 const watchlistContent = await readFile(watchlistPath, "utf-8")
-                data.dataSource = JSON.parse(watchlistContent)
+                const watchlists = JSON.parse(watchlistContent)
+
+                // Default market preference: IDX > NASDAQ
+                const defaultMarket = "IDX"
+
+                // Find watchlist for the default market
+                const watchlist = Array.isArray(watchlists)
+                    ? watchlists.find((w) => w.market === defaultMarket) ||
+                      watchlists[0]
+                    : watchlists
+
+                if (watchlist) {
+                    data.dataSource = {
+                        provider: watchlist.provider,
+                        market: watchlist.market,
+                        defaultSymbols:
+                            watchlist.symbols || watchlist.defaultSymbols,
+                    }
+                }
             } catch (error) {
                 // If global watchlist doesn't exist, it's okay - profile can have its own
             }

@@ -1,49 +1,39 @@
 # CODIFX - Professional Trading Scanner CLI
 
-[![npm version](https://badge.fury.io/js/codifx.svg)](https://www.npmjs.com/package/codifx)
+[![npm version](https://img.shields.io/npm/v/codifx.svg)](https://www.npmjs.com/package/codifx)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**CODIFX** is a professional-grade command-line trading scanner that analyzes
-technical indicators across multiple timeframes to identify high-probability
-trading opportunities. Supports scalping, day trading, and swing trading
-strategies.
+Professional multi-type trading scanner CLI with advanced technical analysis,
+risk management, and HTML dashboard visualization.
 
-## ✨ Features
+## 🎯 Features
 
-### 🎯 Multi-Strategy Support
+### Multi-Type Trading Support
 
--   **Scalping** (1m/5m timeframes)
--   **Day Trading** (5m/15m timeframes)
--   **Swing Trading** (1h/1d timeframes)
+-   **Scalping** (1m/5m) - Fast-paced, oscillator-heavy analysis
+-   **Day Trading** (5m/15m) - Balanced trend and oscillator signals
+-   **Swing Trading** (1h/1d) - Trend-focused, high-quality signals
 
-### 📊 Comprehensive Technical Analysis
+### Advanced Analysis
 
--   **Trend Detection**: EMA/SMA alignment, slope analysis
--   **Oscillators**: RSI, Stochastic, MACD, ADX, CCI
--   **Volume Analysis**: Volume spike detection
--   **Volatility**: ATR-based volatility bonuses
+-   ✅ **Multi-Timeframe Confirmation** - Primary + confirmation timeframe
+    analysis
+-   ✅ **8 Technical Indicators** - RSI, MACD, Stochastic, ADX, CCI, Williams
+    %R, EMAs, SMAs
+-   ✅ **Smart Filters** - Volume, volatility (ATR %), and minimum ADX filters
+-   ✅ **Trading Levels** - Automatic entry, stop-loss, take-profit, support,
+    and resistance
+-   ✅ **Risk Management** - Risk/Reward ratio and win rate estimation
 
-### 🎯 Complete Trading Levels
+### Visual Dashboard
 
--   **Entry Price**: Current market price
--   **Support & Resistance**: Automatic pivot detection
--   **Stop Loss**: ATR-based (2×ATR)
--   **Take Profit**: Risk-reward optimized (1:2 ratio)
--   **Win Rate**: Estimated based on signal strength
-
-### 🔍 Smart Filtering
-
--   **Liquidity Filter**: Minimum volume requirements
--   **Volatility Filter**: ATR percentage-based (fair across all price ranges)
--   **Score Threshold**: Configurable minimum scores
--   **Direction Filter**: Filter by BUY/SELL signals
-
-### 📝 Professional Logging
-
--   Detailed signal analysis
--   Comprehensive NO SIGNAL diagnostics
--   Rejection statistics breakdown
--   Export to log files
+-   🎨 **HTML Dashboard** - Beautiful, responsive interface with TradingView
+    charts
+-   📊 **Interactive Filters** - Filter signals by direction (BUY/SELL) and
+    strength
+-   🤖 **AI Analysis Modal** - Detailed breakdown of each signal
+-   📈 **Real-time Charts** - Integrated TradingView widget for instant chart
+    viewing
 
 ## 📦 Installation
 
@@ -56,290 +46,373 @@ npm install -g codifx
 ### Basic Scan
 
 ```bash
-# Scan IDX stocks (default market)
-codifx scan --symbols BBCA.JK BBRI.JK TLKM.JK
+# Scan with default profile (day trading)
+codifx scan --symbols BBCA TLKM ASII
 
-# Scan US stocks
-codifx scan --symbols AAPL MSFT GOOGL --market NASDAQ
+# Scan specific market
+codifx scan --symbols AAPL TSLA MSFT --market NASDAQ
+
+# Scan with direction filter
+codifx scan --symbols BBCA TLKM --direction buy
+
+# Generate HTML dashboard
+codifx scan --symbols BBCA TLKM --html
+
+# Save detailed log
+codifx scan --symbols BBCA TLKM --log
 ```
 
-### Filter by Direction
+### Profile Management
 
 ```bash
-# Only BUY signals
-codifx scan --symbols BBCA.JK BBRI.JK --direction buy
-
-# Only SELL signals
-codifx scan --symbols AAPL MSFT --direction sell
-```
-
-### Save to Log File
-
-```bash
-codifx scan --symbols BBCA.JK BBRI.JK --log my-scan.log
-```
-
-### Use Different Trading Profiles
-
-```bash
-# Scalping (quick trades, 1m/5m timeframes)
-codifx scan --symbols AAPL --profile profiles/scalp.profile.json
-
-# Swing trading (longer holds, 1h/1d timeframes)
-codifx scan --symbols AAPL --profile profiles/swing.profile.json
-```
-
-## 📊 Sample Output
-
-```
-════════════════════════════════════════════════════════════════════════════════
-                        🎯  TRADING SIGNALS FOUND
-════════════════════════════════════════════════════════════════════════════════
-SYMBOL     DIR    SCORE   RATING        ENTRY       SUPPORT     RESIST      SL          TP          RR    WIN%
-────────────────────────────────────────────────────────────────────────────────
-BBRI.JK    ▼SELL  71      SPECULATIVE   Rp 3,750    Rp 3,680    Rp 3,820    Rp 3,820    Rp 3,610    2.0   68%
-BBCA.JK    ▲BUY   82      STRONG_BUY    Rp 10,250   Rp 10,100   Rp 10,400   Rp 10,100   Rp 10,550   2.0   78%
-════════════════════════════════════════════════════════════════════════════════
-```
-
-### Column Descriptions
-
--   **DIR**: Signal direction (▲BUY / ▼SELL)
--   **SCORE**: Signal strength (0-100)
--   **RATING**: Trading recommendation
--   **ENTRY**: Recommended entry price
--   **SUPPORT**: Nearest support level
--   **RESIST**: Nearest resistance level
--   **SL**: Stop Loss price (risk management)
--   **TP**: Take Profit target (reward)
--   **RR**: Risk-Reward ratio
--   **WIN%**: Estimated win rate
-
-## 🎛️ Commands
-
-### `scan` - Scan Live Market Data
-
-Analyze stocks for trading opportunities.
-
-```bash
-codifx scan [options]
-
-Options:
-  -s, --symbol <symbol>        Single symbol to scan
-  -l, --symbols <symbols...>   Multiple symbols to scan
-  -m, --market <market>        Market: IDX, NASDAQ, NYSE, CRYPTO (default: IDX)
-  -d, --direction <direction>  Filter by signal direction: buy, sell, or both (default: both)
-  --log [filepath]             Save detailed scan log to file
-  -h, --help                   Display help
-```
-
-### `simulate` - Backtest with Simulated Data
-
-Test strategies with generated data.
-
-```bash
-codifx simulate
-```
-
-### `profile` - Manage Trading Profiles
-
-List and view trading profiles.
-
-```bash
+# List all profiles
 codifx profile --list
+
+# Show profile details
 codifx profile --show day
+
+# Set active profile
+codifx profile --use swing
+
+# Validate profile
+codifx profile --validate scalp
 ```
 
-### `validate` - Validate Configuration
+## 📊 Trading Profiles
 
-Validate profile configuration files.
-
-```bash
-codifx validate --profile profiles/day.profile.json
-```
-
-## ⚙️ Configuration
-
-### Trading Profiles
-
-CODIFX includes 3 pre-configured profiles:
-
-#### Day Trading (default)
-
--   Primary: 5m, Confirmation: 15m
--   Volatility: 0.5-3.0% ATR
--   Min Score: 70
-
-#### Scalping
-
--   Primary: 1m, Confirmation: 5m
--   Volatility: 0.8-4.0% ATR (higher tolerance)
--   Min Score: 65
-
-#### Swing Trading
-
--   Primary: 1h, Confirmation: 1d
--   Volatility: 0.3-2.5% ATR (lower tolerance)
--   Min Score: 75
-
-### Custom Profiles
-
-Create custom profiles in JSON format:
+### 🔥 Scalp Profile
 
 ```json
 {
-    "tradingType": "custom",
-    "timeframes": {
-        "primary": "15m",
-        "confirmation": "1h"
+    "tradingType": "scalp",
+    "timeframes": { "primary": "1m", "confirmation": "5m" },
+    "weights": { "trend": 30, "oscillator": 70 },
+    "filters": {
+        "minVolume": 2000000,
+        "minADX": 20,
+        "atrMinPercent": 0.8,
+        "atrMaxPercent": 4.0
     },
+    "scoring": { "minScore": 65 }
+}
+```
+
+**Characteristics:**
+
+-   ⚡ Ultra-fast timeframes (1m/5m)
+-   📊 Oscillator-focused (70% weight)
+-   💰 Highest volume requirement (2M)
+-   🎯 Lowest score threshold (65) - more signals
+
+---
+
+### 📈 Day Profile
+
+```json
+{
+    "tradingType": "day",
+    "timeframes": { "primary": "5m", "confirmation": "15m" },
+    "weights": { "trend": 40, "oscillator": 60 },
     "filters": {
         "minVolume": 1000000,
+        "minADX": 20,
         "atrMinPercent": 0.5,
         "atrMaxPercent": 3.0
     },
-    "scoring": {
-        "minScore": 70
-    }
+    "scoring": { "minScore": 70 }
 }
 ```
 
-## 🎯 Use Cases
+**Characteristics:**
 
-### For Day Traders
+-   ⚖️ Balanced timeframes (5m/15m)
+-   🔄 Balanced weights (40/60)
+-   💼 Medium volume requirement (1M)
+-   🎯 Medium score threshold (70)
 
-```bash
-# Scan Indonesian blue chips for day trading
-codifx scan --symbols BBCA.JK BBRI.JK BMRI.JK TLKM.JK ASII.JK
+---
 
-# Only look for BUY opportunities
-codifx scan --symbols BBCA.JK BBRI.JK --direction buy --log trades.log
-```
+### 🌊 Swing Profile
 
-### For Scalpers
-
-```bash
-# Quick scalping opportunities
-codifx scan --symbols AAPL TSLA --profile profiles/scalp.profile.json --direction buy
-```
-
-### For Swing Traders
-
-```bash
-# Longer-term setups
-codifx scan --symbols GOOGL AMZN MSFT --profile profiles/swing.profile.json
-```
-
-## 📈 Trading Signals Explained
-
-### Signal Ratings
-
--   **STRONG_BUY** (85-100): High confidence long entry
--   **BUY** (70-84): Good long entry
--   **SPECULATIVE** (60-69): Lower confidence, higher risk
--   **HOLD** (40-59): No clear direction
--   **SELL/STRONG_SELL**: Short opportunities
-
-### Win Rate Estimation
-
-Based on signal strength and confirmations:
-
--   High quality signals (80+): ~75-85% win rate
--   Medium signals (70-79): ~65-75% win rate
--   Speculative (60-69): ~55-65% win rate
-
-### Risk Management
-
-All signals include:
-
--   **Stop Loss**: Placed at 2×ATR from entry
--   **Take Profit**: 1:2 risk-reward ratio
--   **Support/Resistance**: Market structure context
-
-## 🔧 API & Programmatic Use
-
-```typescript
-import { ScannerEngine, loadProfile } from "codifx"
-
-const profile = await loadProfile("profiles/day.profile.json")
-const analysis = await ScannerEngine.analyze(
-    symbol,
-    primaryData,
-    confirmationData,
-    profile
-)
-
-if (analysis.signal) {
-    console.log("Signal found!", analysis.signal)
+```json
+{
+    "tradingType": "swing",
+    "timeframes": { "primary": "1h", "confirmation": "1d" },
+    "weights": { "trend": 60, "oscillator": 40 },
+    "filters": {
+        "minVolume": 500000,
+        "minADX": 25,
+        "atrMinPercent": 0.3,
+        "atrMaxPercent": 2.5
+    },
+    "scoring": { "minScore": 75 }
 }
 ```
 
-## 🛠️ Development
+**Characteristics:**
 
-```bash
-# Clone repository
-git clone https://github.com/yourusername/codifx.git
-cd codifx
+-   📅 Longer timeframes (1h/1d)
+-   📈 Trend-focused (60% weight)
+-   💵 Lower volume requirement (500K)
+-   🎯 Highest score threshold (75) - quality over quantity
 
-# Install dependencies
-npm install
+## 🎨 HTML Dashboard Features
 
-# Build
-npm run build
+### Interactive Interface
 
-# Run locally
-npm start
+-   **Stats Bar** - Total signals, buy/sell split, average score
+-   **Filter Buttons** - All, Buy Only, Sell Only, Strong Signals (≥80)
+-   **Signal Cards** - Color-coded with gradient backgrounds
+-   **Smooth Animations** - Fade-in effects for better UX
 
-# Development mode (watch)
-npm run dev
+### Signal Cards Display
+
+Each card shows:
+
+-   **Symbol** - Stock ticker (e.g., IDX:BBCA)
+-   **Direction** - BUY ▲ or SELL ▼
+-   **Score** - Final score out of 100
+-   **Rating** - STRONG BUY, BUY, or SPECULATIVE
+-   **Breakdown** - Trend and Oscillator scores with progress bars
+-   **Bonuses** - Volume, Volatility, and Confirmation bonuses
+
+### Chart & AI Analysis
+
+-   **📊 Chart Button** - Opens TradingView chart in modal
+-   **🤖 AI Button** - Shows detailed analysis:
+    -   Technical Summary
+    -   Trend Analysis
+    -   Oscillator Signals
+    -   Trading Levels (Entry, SL, TP, Support, Resistance)
+    -   Filter Status
+    -   Recommendation
+
+## 📋 Output Example
+
+### Console Output
+
+```
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+                                              TRADING SIGNALS FOUND
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+SYMBOL     DIR      SCORE   RATING        ENTRY       SUPPORT     RESIST      SL          TP          RR      WIN%
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+BBCA.JK    ▲ BUY    86      STRONG BUY    Rp 8.025    Rp 8.000    Rp 8.075    Rp 7.990    Rp 8.105    2.0     79%
+TLKM.JK    ▼ SELL   74      SPECULATIVE   Rp 3.470    Rp 3.430    Rp 3.470    Rp 3.485    Rp 3.425    2.0     70%
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+✨ Total signals: 2
 ```
 
-## 📝 Requirements
+### Log Output (with --log)
 
--   **Node.js**: >= 18.0.0
--   **Internet**: Required for live market data
+```
+[BBCA.JK] ✔ SIGNAL FOUND
+  Direction: BUY ▲
+  Rating: STRONG BUY
+  Final Score: 86/100
 
-## 🗺️ Roadmap
+  Score Breakdown:
+    - Trend: 85/100
+    - Oscillator: 90/100
+    - Volume Bonus: +5
+    - Volatility Bonus: +4
+    - Confirmation Bonus: +7
 
--   [ ] Real-time WebSocket streaming
--   [ ] Telegram/Discord notifications
--   [ ] Backtesting with historical data
--   [ ] Web dashboard
--   [ ] Portfolio tracking
--   [ ] More markets (crypto, forex, commodities)
+  Trading Levels:
+    - Entry: Rp 8,025
+    - Stop Loss: Rp 7,990
+    - Take Profit: Rp 8,105
+    - Support: Rp 8,000
+    - Resistance: Rp 8,075
+    - Risk/Reward: 1:2.0
+    - Win Rate: 79%
 
-## 🤝 Contributing
+  Filters:
+    - Liquidity: PASS ✅
+    - Volatility: PASS ✅
+```
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+## 🔧 Configuration
+
+### Profile Customization
+
+Edit profile files in `profiles/` directory:
+
+**File Structure:**
+
+```
+profiles/
+├── day.profile.json
+├── swing.profile.json
+└── scalp.profile.json
+```
+
+**Customizable Parameters:**
+
+1. **Timeframes**
+
+    - `primary`: 1m, 5m, 15m, 1h, 1d
+    - `confirmation`: 5m, 15m, 1h, 1d, 1w
+
+2. **Weights** (must sum to 100)
+
+    - `trend`: 0-100
+    - `oscillator`: 0-100
+
+3. **Filters**
+
+    - `minVolume`: Minimum average volume
+    - `minADX`: Minimum ADX for trend strength (0-100)
+    - `atrMinPercent`: Minimum ATR% for volatility
+    - `atrMaxPercent`: Maximum ATR% for volatility
+
+4. **Scoring**
+
+    - `minScore`: Minimum score threshold (0-100)
+
+5. **Indicators**
+    - `trend`: ["SMA20", "EMA10", "EMA20", "EMA50", "HMA9", "VWMA20"]
+    - `oscillators`: ["RSI", "MACD", "Stochastic", "ADX", "CCI", "Williams"]
+
+## 🎯 Scoring System
+
+### Base Score Calculation
+
+```
+Final Score = (Trend × Weight_Trend) + (Oscillator × Weight_Oscillator) + Bonuses
+```
+
+### Bonuses
+
+-   **Volume Bonus** (0-10): Based on volume spike vs average
+-   **Volatility Bonus** (0-8): Based on ATR% within optimal range
+-   **Confirmation Bonus** (5-10): Multi-timeframe alignment
+
+### Rating Assignment
+
+-   **STRONG BUY/SELL**: Score ≥ 85
+-   **BUY/SELL**: Score ≥ 75
+-   **SPECULATIVE**: Score ≥ 65 (or profile minScore)
+
+## 🛠️ Architecture
+
+### Core Components
+
+```
+src/
+├── cli/               # Command-line interface
+│   ├── index.ts       # CLI entry point
+│   └── commands/      # Command implementations
+│       ├── scan.ts    # Main scanning logic
+│       ├── profile.ts # Profile management
+│       └── validate.ts# Validation tools
+├── core/              # Analysis engines
+│   ├── engine.ts      # Main scanner engine
+│   ├── trend-engine.ts     # Trend analysis
+│   ├── oscillator-engine.ts# Oscillator analysis
+│   ├── scoring.ts     # Scoring & rating system
+│   └── filters.ts     # Volume & volatility filters
+├── indicators/        # Technical indicators
+│   ├── trend/         # SMA, EMA, HMA, VWMA
+│   └── oscillator/    # RSI, MACD, Stochastic, ADX, CCI, Williams
+├── data/              # Data providers
+│   ├── yahoo.ts       # Yahoo Finance integration
+│   └── provider.ts    # Base data provider
+├── utils/             # Utilities
+│   ├── html-generator.ts # HTML dashboard generator
+│   ├── logger.ts      # Detailed logging
+│   ├── formatter.ts   # Output formatting
+│   └── levels.ts      # Trading levels calculator
+└── types/             # TypeScript types
+```
+
+## 📝 Advanced Usage
+
+### Custom Scan with All Options
+
+```bash
+codifx scan \
+  --symbols BBCA TLKM ASII UNVR \
+  --market IDX \
+  --direction both \
+  --html \
+  --log ~/trading/logs/scan.log
+```
+
+### Batch Scanning
+
+```bash
+# Create symbols file
+echo "BBCA\nTLKM\nASII\nUNVR" > stocks.txt
+
+# Scan all symbols
+codifx scan --symbols $(cat stocks.txt) --html
+```
+
+### Profile Switching Workflow
+
+```bash
+# Morning scalping
+codifx profile --use scalp
+codifx scan --symbols BBCA TLKM --html
+
+# Midday swing trading
+codifx profile --use swing
+codifx scan --symbols BBCA TLKM ASII --html
+```
+
+## 🌍 Supported Markets
+
+-   **IDX** - Indonesia Stock Exchange
+-   **NASDAQ** - NASDAQ Stock Market
+-   **NYSE** - New York Stock Exchange
+-   **CRYPTO** - Cryptocurrency markets
+
+Symbol format:
+
+-   IDX: `BBCA`, `TLKM` (auto-adds `.JK`)
+-   US: `AAPL`, `TSLA`, `MSFT`
+-   Crypto: `BTC-USD`, `ETH-USD`
+
+## 🔍 Troubleshooting
+
+### No Signals Found
+
+-   **Too strict filters**: Lower `minScore` or adjust ATR% range
+-   **Low volume stocks**: Reduce `minVolume` requirement
+-   **Wrong timeframe**: Try different profile (scalp/day/swing)
+
+### HTML Not Opening
+
+-   Check browser settings
+-   File location: `/tmp/codifx-dashboard.html` (macOS/Linux)
+-   Manually open the file from temp directory
+
+### Data Fetch Issues
+
+-   Check internet connection
+-   Verify symbol format
+-   Yahoo Finance API may have rate limits
 
 ## 📄 License
 
 MIT License - see LICENSE file for details
 
-## ⚠️ Disclaimer
+## 👨‍💻 Author
 
-**CODIFX is for educational and informational purposes only.**
+**anthoplara** <anthoplara@gmail.com>
 
--   This software does NOT provide financial advice
--   Past performance does not guarantee future results
--   Trading involves substantial risk of loss
--   Always do your own research (DYOR)
--   Never risk more than you can afford to lose
--   Consult with a licensed financial advisor before trading
+## 🔗 Links
 
-The authors and contributors are not responsible for any financial losses
-incurred through the use of this software.
+-   GitHub: https://github.com/anthoplara/codifx
+-   NPM: https://www.npmjs.com/package/codifx
+-   Issues: https://github.com/anthoplara/codifx/issues
 
-## 📞 Support
+## 🤝 Contributing
 
--   **Issues**: [GitHub Issues](https://github.com/yourusername/codifx/issues)
--   **Email**: your.email@example.com
--   **Documentation**: [Wiki](https://github.com/yourusername/codifx/wiki)
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## ⭐ Show Your Support
 
-If you find CODIFX useful, please consider giving it a star on GitHub!
-
----
-
-**Made with ❤️ for traders by traders**
+Give a ⭐️ if this project helped you!

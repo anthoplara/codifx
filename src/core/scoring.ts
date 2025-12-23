@@ -3,11 +3,7 @@
  */
 
 import type { SignalScore, Rating, TradingType } from "../types/index.js"
-import {
-    WEIGHT_CONFIG,
-    RATING_THRESHOLDS,
-    MIN_SCORE_THRESHOLD,
-} from "../utils/constants.js"
+import { RATING_THRESHOLDS } from "../utils/constants.js"
 import {
     VOLUME_BONUS_CONFIG,
     VOLATILITY_BONUS_CONFIG,
@@ -21,16 +17,15 @@ export class ScoringEngine {
     static calculateScore(
         trendScore: number,
         oscillatorScore: number,
-        tradingType: TradingType,
+        trendWeight: number,
+        oscillatorWeight: number,
         volumeBonus: number = 0,
         volatilityBonus: number = 0,
         confirmationBonus: number = 0
     ): SignalScore {
-        const weights = WEIGHT_CONFIG[tradingType]
-
-        // Weighted base score
-        const weightedTrend = (trendScore * weights.trend) / 100
-        const weightedOscillator = (oscillatorScore * weights.oscillator) / 100
+        // Weighted base score using profile weights
+        const weightedTrend = (trendScore * trendWeight) / 100
+        const weightedOscillator = (oscillatorScore * oscillatorWeight) / 100
         const baseScore = weightedTrend + weightedOscillator
 
         // Add bonuses (capped at max score of 100)
@@ -117,6 +112,9 @@ export class ScoringEngine {
 export class RatingEngine {
     /**
      * Assign rating based on score
+export class RatingEngine {
+    /**
+     * Assign rating based on score
      */
     static assignRating(score: number): Rating {
         if (score >= RATING_THRESHOLDS.STRONG_BUY) return "STRONG BUY"
@@ -126,16 +124,16 @@ export class RatingEngine {
     }
 
     /**
-     * Check if score meets minimum threshold for trading type
+     * Check if score meets minimum threshold
      */
-    static meetsMinimumScore(score: number, tradingType: TradingType): boolean {
-        return score >= MIN_SCORE_THRESHOLD[tradingType]
+    static meetsMinimumScore(score: number, minScore: number): boolean {
+        return score >= minScore
     }
 
     /**
-     * Get minimum threshold for trading type
+     * Get minimum threshold (passthrough for consistency)
      */
-    static getMinimumThreshold(tradingType: TradingType): number {
-        return MIN_SCORE_THRESHOLD[tradingType]
+    static getMinimumThreshold(minScore: number): number {
+        return minScore
     }
 }

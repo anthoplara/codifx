@@ -111,25 +111,24 @@ export class ScannerEngine {
             profile.tradingType
         )
 
-        // Calculate final score
+        // Calculate final score using profile weights
         const scoreResult = ScoringEngine.calculateScore(
             trendResult.score,
             oscillatorResult.score,
-            profile.tradingType,
+            profile.weights.trend,
+            profile.weights.oscillator,
             volumeBonus,
             volatilityBonus,
             confirmationBonus
         )
 
-        // Get minimum threshold
-        const minScoreThreshold = RatingEngine.getMinimumThreshold(
-            profile.tradingType
-        )
+        // Get minimum threshold from profile
+        const minScoreThreshold = profile.scoring.minScore
 
-        // Check minimum score threshold
+        // Check minimum score threshold using profile value
         const meetsThreshold = RatingEngine.meetsMinimumScore(
             scoreResult.finalScore,
-            profile.tradingType
+            profile.scoring.minScore
         )
 
         if (!meetsThreshold) {

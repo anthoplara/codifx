@@ -277,7 +277,7 @@
                             <button onclick="openChart('${stock.symbol}')" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition shadow-md">
                                 📊 Chart
                             </button>
-                            <button onclick="openAI(${index})" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition shadow-md">
+                            <button onclick="openAI('${stock.symbol}')" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition shadow-md">
                                 🤖 AI
                             </button>
                         </div>
@@ -327,8 +327,11 @@
                 document.getElementById('chartModal').classList.remove('hidden');
             }
 
-            function openAI(index) {
-                const stock = stockData[index];
+            function openAI(symbol) {
+                // Find stock by symbol from original stockData
+                const stock = stockData.find(s => s.symbol === symbol);
+                if (!stock) return;
+
                 document.getElementById('aiTitle').textContent = `${stock.symbol} - AI Analysis`;
 
                 document.getElementById('aiContent').innerHTML = `

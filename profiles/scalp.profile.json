@@ -1,0 +1,24 @@
+{
+    "tradingType": "scalp",
+    "timeframes": {
+        "primary": "1m",
+        "confirmation": "5m"
+    },
+    "indicators": {
+        "trend": ["EMA10", "EMA20"],
+        "oscillators": ["RSI", "Stochastic", "MACD", "ADX", "CCI"]
+    },
+    "weights": {
+        "trend": 30,
+        "oscillator": 70
+    },
+    "filters": {
+        "minVolume": 2000000,
+        "minADX": 20,
+        "atrMinPercent": 0.8,
+        "atrMaxPercent": 4.0
+    },
+    "scoring": {
+        "minScore": 65
+    }
+}

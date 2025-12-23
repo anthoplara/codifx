@@ -1,0 +1,24 @@
+{
+    "tradingType": "day",
+    "timeframes": {
+        "primary": "5m",
+        "confirmation": "15m"
+    },
+    "indicators": {
+        "trend": ["EMA10", "EMA20", "EMA50"],
+        "oscillators": ["RSI", "Stochastic", "MACD", "ADX"]
+    },
+    "weights": {
+        "trend": 40,
+        "oscillator": 60
+    },
+    "filters": {
+        "minVolume": 1000000,
+        "minADX": 20,
+        "atrMinPercent": 0.5,
+        "atrMaxPercent": 3.0
+    },
+    "scoring": {
+        "minScore": 70
+    }
+}

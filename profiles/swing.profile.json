@@ -1,0 +1,24 @@
+{
+    "tradingType": "swing",
+    "timeframes": {
+        "primary": "1h",
+        "confirmation": "1d"
+    },
+    "indicators": {
+        "trend": ["SMA20", "SMA50", "EMA10", "EMA20", "EMA50"],
+        "oscillators": ["RSI", "MACD", "ADX"]
+    },
+    "weights": {
+        "trend": 60,
+        "oscillator": 40
+    },
+    "filters": {
+        "minVolume": 500000,
+        "minADX": 25,
+        "atrMinPercent": 0.3,
+        "atrMaxPercent": 2.5
+    },
+    "scoring": {
+        "minScore": 75
+    }
+}

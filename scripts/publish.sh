@@ -120,21 +120,22 @@ echo ""
 # Obfuscate
 echo "⏳ Obfuscating JavaScript files..."
 
-# Create temp directory for obfuscated files
-temp_obf_dir=$(mktemp -d)
+# Create backup of dist
+temp_backup_dir=$(mktemp -d)
+cp -R dist/* "$temp_backup_dir/"
 
-# Find all JS files in dist and obfuscate them
-find dist -name "*.js" -type f | while read -r file; do
-    # Get relative path
-    rel_path="${file#dist/}"
-    output_file="$temp_obf_dir/$rel_path"
+# Counter for progress
+total_files=$(find dist -name "*.js" -type f | wc -l | tr -d ' ')
+current_file=0
+
+# Process each JS file
+while IFS= read -r file; do
+    current_file=$((current_file + 1))
+    echo "  [$current_file/$total_files] Obfuscating $(basename "$file")..."
     
-    # Create output directory if needed
-    mkdir -p "$(dirname "$output_file")"
-    
-    # Obfuscate
+    # Obfuscate in-place
     npx javascript-obfuscator "$file" \
-        --output "$output_file" \
+        --output "$file" \
         --compact true \
         --control-flow-flattening true \
         --control-flow-flattening-threshold 0.75 \
@@ -147,15 +148,21 @@ find dist -name "*.js" -type f | while read -r file; do
         --string-array-shuffle true \
         --self-defending true \
         --rename-globals false \
-        --reserved-names '^require$,^exports$,^module$' \
-        > /dev/null 2>&1
-done
+        --reserved-names '^require$,^exports$,^module$'
+    
+    if [ $? -ne 0 ]; then
+        echo "❌ Obfuscation failed for $file"
+        echo "   Restoring from backup..."
+        rm -rf dist
+        mv "$temp_backup_dir" dist
+        exit 1
+    fi
+done < <(find dist -name "*.js" -type f)
 
-# Replace dist with obfuscated files
-rsync -av "$temp_obf_dir/" dist/
-rm -rf "$temp_obf_dir"
+# Clean up backup
+rm -rf "$temp_backup_dir"
 
-echo "✅ Code obfuscated"
+echo "✅ Code obfuscated ($total_files files processed)"
 echo ""
 
 # Git commit and tag

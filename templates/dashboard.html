@@ -362,15 +362,15 @@
                         <div class="grid grid-cols-2 gap-3 text-sm">
                             <div>
                                 <span class="text-gray-600">Entry:</span>
-                                <span class="font-bold text-gray-800">Rp ${stock.entry.toLocaleString('id-ID')}</span>
+                                <span class="font-bold text-gray-800">Rp ${Math.round(stock.entry).toLocaleString('id-ID')}</span>
                             </div>
                             <div>
                                 <span class="text-gray-600">Stop Loss:</span>
-                                <span class="font-bold text-red-600">Rp ${stock.stopLoss.toLocaleString('id-ID')}</span>
+                                <span class="font-bold text-red-600">Rp ${Math.round(stock.stopLoss).toLocaleString('id-ID')}</span>
                             </div>
                             <div>
                                 <span class="text-gray-600">Take Profit:</span>
-                                <span class="font-bold text-green-600">Rp ${stock.takeProfit.toLocaleString('id-ID')}</span>
+                                <span class="font-bold text-green-600">Rp ${Math.round(stock.takeProfit).toLocaleString('id-ID')}</span>
                             </div>
                             <div>
                                 <span class="text-gray-600">Risk/Reward:</span>
@@ -378,11 +378,11 @@
                             </div>
                             <div>
                                 <span class="text-gray-600">Support:</span>
-                                <span class="font-bold text-gray-800">Rp ${stock.support.toLocaleString('id-ID')}</span>
+                                <span class="font-bold text-gray-800">Rp ${Math.round(stock.support).toLocaleString('id-ID')}</span>
                             </div>
                             <div>
                                 <span class="text-gray-600">Resistance:</span>
-                                <span class="font-bold text-gray-800">Rp ${stock.resistance.toLocaleString('id-ID')}</span>
+                                <span class="font-bold text-gray-800">Rp ${Math.round(stock.resistance).toLocaleString('id-ID')}</span>
                             </div>
                         </div>
                     </div>
@@ -397,8 +397,8 @@
                         <p class="text-sm text-gray-700">
                             💡 <strong>Recommendation:</strong> ${
                                 stock.direction === 'BUY'
-                                ? `Consider entering at Rp ${stock.entry.toLocaleString('id-ID')} with stop loss at Rp ${stock.stopLoss.toLocaleString('id-ID')} and take profit at Rp ${stock.takeProfit.toLocaleString('id-ID')}.`
-                                : `Consider short entry at Rp ${stock.entry.toLocaleString('id-ID')} with stop loss at Rp ${stock.stopLoss.toLocaleString('id-ID')} and take profit at Rp ${stock.takeProfit.toLocaleString('id-ID')}.`
+                                ? `Consider entering at Rp ${Math.round(stock.entry).toLocaleString('id-ID')} with stop loss at Rp ${Math.round(stock.stopLoss).toLocaleString('id-ID')} and take profit at Rp ${Math.round(stock.takeProfit).toLocaleString('id-ID')}.`
+                                : `Consider short entry at Rp ${Math.round(stock.entry).toLocaleString('id-ID')} with stop loss at Rp ${Math.round(stock.stopLoss).toLocaleString('id-ID')} and take profit at Rp ${Math.round(stock.takeProfit).toLocaleString('id-ID')}.`
                             }
                         </p>
                     </div>

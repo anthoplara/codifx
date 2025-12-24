@@ -11,12 +11,23 @@ import { explainCommand } from "./commands/explain.js"
 import { readFileSync } from "fs"
 import { join, dirname } from "path"
 import { fileURLToPath } from "url"
+import {
+    checkForUpdates,
+    displayUpdateNotification,
+} from "../utils/version-checker.js"
 
 // Get package version
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const packageJson = JSON.parse(
     readFileSync(join(__dirname, "../../package.json"), "utf-8")
 )
+
+// Check for updates (async, non-blocking for program setup)
+checkForUpdates(packageJson.version).then((latestVersion) => {
+    if (latestVersion) {
+        displayUpdateNotification(packageJson.version, latestVersion)
+    }
+})
 
 const program = new Command()
 

@@ -23,7 +23,9 @@ coverage
 
 # Dependency directories
 node_modules/
-jspm_packages/
+dist/
+# Note: dist/ is rebuilt and obfuscated during publish, not committed
+pm_packages/
 
 # TypeScript cache
 *.tsbuildinfo

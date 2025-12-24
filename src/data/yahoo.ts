@@ -32,7 +32,7 @@ export class YahooFinanceProvider extends BaseDataProvider {
             const timestamps = result.timestamp
             const quote = result.indicators.quote[0]
 
-            const data: OHLCV[] = timestamps.map(
+            const rawData: OHLCV[] = timestamps.map(
                 (timestamp: number, index: number) => ({
                     timestamp: timestamp * 1000, // Convert to milliseconds
                     open: quote.open[index],
@@ -43,28 +43,50 @@ export class YahooFinanceProvider extends BaseDataProvider {
                 })
             )
 
-            // Filter out null values and validate
-            let validData = data.filter(
-                (candle) =>
-                    candle.open !== null &&
-                    candle.high !== null &&
-                    candle.low !== null &&
-                    candle.close !== null
-            )
+            const validData = rawData
+                .filter((item: any) => {
+                    return (
+                        item.timestamp !== null &&
+                        item.close !== null &&
+                        item.open !== null &&
+                        item.high !== null &&
+                        item.low !== null &&
+                        item.volume !== null
+                    )
+                })
+                .map((item: any) => ({
+                    timestamp: item.timestamp,
+                    open: item.open,
+                    close: item.close,
+                    high: item.high,
+                    low: item.low,
+                    volume: item.volume,
+                }))
+                .filter((candle: OHLCV) => this.isValidCandle(candle))
 
-            // Filter by targetDate if provided
-            if (targetDate) {
-                const maxTimestamp = targetDate.getTime()
-                validData = validData.filter(
-                    (candle) => candle.timestamp <= maxTimestamp
+            // Ensure we have enough valid data (at least 80% of requested)
+            const minRequired = Math.floor(limit * 0.8)
+            if (validData.length < minRequired) {
+                throw new Error(
+                    `Insufficient valid data: only ${validData.length}/${limit} candles are valid. ` +
+                        `Market may be closed or data quality is poor.`
                 )
             }
 
-            if (!this.validateData(validData)) {
+            // Filter by targetDate if provided
+            let filteredData = validData
+            if (targetDate) {
+                const maxTimestamp = targetDate.getTime()
+                filteredData = validData.filter(
+                    (candle: OHLCV) => candle.timestamp <= maxTimestamp
+                )
+            }
+
+            if (!this.validateData(filteredData)) {
                 throw new Error("Invalid data received from Yahoo Finance")
             }
 
-            return this.sortData(validData).slice(-limit)
+            return this.sortData(filteredData).slice(-limit)
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 throw new Error(`Yahoo Finance API error: ${error.message}`)
@@ -98,6 +120,50 @@ export class YahooFinanceProvider extends BaseDataProvider {
             "1d": "1d",
         }
         return mapping[timeframe]
+    }
+
+    /**
+     * Validate individual candle for data quality
+     */
+    private isValidCandle(candle: OHLCV): boolean {
+        // Check all values are valid numbers
+        if (
+            typeof candle.timestamp !== "number" ||
+            typeof candle.open !== "number" ||
+            isNaN(candle.open) ||
+            typeof candle.close !== "number" ||
+            isNaN(candle.close) ||
+            typeof candle.high !== "number" ||
+            isNaN(candle.high) ||
+            typeof candle.low !== "number" ||
+            isNaN(candle.low) ||
+            typeof candle.volume !== "number" ||
+            isNaN(candle.volume)
+        ) {
+            return false
+        }
+
+        // Sanity checks for OHLC relationships
+        if (candle.high < candle.low) return false
+        if (candle.high < candle.open) return false
+        if (candle.high < candle.close) return false
+        if (candle.low > candle.open) return false
+        if (candle.low > candle.close) return false
+
+        // Volume should be non-negative
+        if (candle.volume < 0) return false
+
+        // All prices should be positive
+        if (
+            candle.open <= 0 ||
+            candle.close <= 0 ||
+            candle.high <= 0 ||
+            candle.low <= 0
+        ) {
+            return false
+        }
+
+        return true
     }
 
     /**

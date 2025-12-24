@@ -57,11 +57,17 @@ current_version=$(node -p "require('./package.json').version")
 echo "📦 Current version: $current_version"
 echo ""
 
+# Calculate example versions
+IFS='.' read -r major minor patch <<< "$current_version"
+next_patch="$major.$minor.$((patch + 1))"
+next_minor="$major.$((minor + 1)).0"
+next_major="$((major + 1)).0.0"
+
 # Ask for version type
 echo "Select version bump type:"
-echo "  1) patch  (0.1.5 → 0.1.6)  - Bug fixes"
-echo "  2) minor  (0.1.5 → 0.2.0)  - New features"
-echo "  3) major  (0.1.5 → 1.0.0)  - Breaking changes"
+echo "  1) patch  ($current_version → $next_patch)  - Bug fixes"
+echo "  2) minor  ($current_version → $next_minor)  - New features"
+echo "  3) major  ($current_version → $next_major)  - Breaking changes"
 echo "  4) custom - Enter version manually"
 echo ""
 read -p "Choice (1-4): " version_choice

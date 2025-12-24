@@ -113,26 +113,42 @@ echo ""
 
 # Obfuscate
 echo "⏳ Obfuscating JavaScript files..."
-npx javascript-obfuscator dist \
-    --output dist \
-    --compact true \
-    --control-flow-flattening true \
-    --control-flow-flattening-threshold 0.75 \
-    --dead-code-injection true \
-    --dead-code-injection-threshold 0.4 \
-    --string-array true \
-    --string-array-threshold 0.75 \
-    --string-array-encoding 'base64' \
-    --string-array-rotate true \
-    --string-array-shuffle true \
-    --self-defending true \
-    --rename-globals false \
-    --reserved-names '^require$,^exports$,^module$'
 
-if [ $? -ne 0 ]; then
-    echo "❌ Obfuscation failed!"
-    exit 1
-fi
+# Create temp directory for obfuscated files
+temp_obf_dir=$(mktemp -d)
+
+# Find all JS files in dist and obfuscate them
+find dist -name "*.js" -type f | while read -r file; do
+    # Get relative path
+    rel_path="${file#dist/}"
+    output_file="$temp_obf_dir/$rel_path"
+    
+    # Create output directory if needed
+    mkdir -p "$(dirname "$output_file")"
+    
+    # Obfuscate
+    npx javascript-obfuscator "$file" \
+        --output "$output_file" \
+        --compact true \
+        --control-flow-flattening true \
+        --control-flow-flattening-threshold 0.75 \
+        --dead-code-injection true \
+        --dead-code-injection-threshold 0.4 \
+        --string-array true \
+        --string-array-threshold 0.75 \
+        --string-array-encoding 'base64' \
+        --string-array-rotate true \
+        --string-array-shuffle true \
+        --self-defending true \
+        --rename-globals false \
+        --reserved-names '^require$,^exports$,^module$' \
+        > /dev/null 2>&1
+done
+
+# Replace dist with obfuscated files
+rsync -av "$temp_obf_dir/" dist/
+rm -rf "$temp_obf_dir"
+
 echo "✅ Code obfuscated"
 echo ""
 

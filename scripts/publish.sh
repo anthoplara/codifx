@@ -106,6 +106,12 @@ new_version=$(node -p "require('./package.json').version")
 echo "✅ Version bumped: $current_version → $new_version"
 echo ""
 
+# Clean
+echo "⏳ Cleaning dist directory..."
+npm run clean
+echo "✅ Dist cleaned"
+echo ""
+
 # Build
 echo "⏳ Building project..."
 npm run build

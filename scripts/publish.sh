@@ -9,6 +9,19 @@ echo "🚀 Codifx Publishing Script"
 echo "============================="
 echo ""
 
+# Check npm authentication
+echo "⏳ Checking npm authentication..."
+if ! npm whoami &> /dev/null; then
+    echo "❌ Not logged in to npm"
+    echo "   Please run: npm login"
+    echo ""
+    exit 1
+fi
+
+npm_user=$(npm whoami)
+echo "✅ Logged in as: $npm_user"
+echo ""
+
 # Check if we're on main/master branch
 current_branch=$(git rev-parse --abbrev-ref HEAD)
 if [ "$current_branch" != "main" ] && [ "$current_branch" != "master" ]; then
